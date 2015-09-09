@@ -8,8 +8,8 @@ module Lol
 
     # Returns match list for a summoner
     # @return []
-    def get summoner_id
-      perform_request(api_url("matchlist/#{summoner_id}"))
+    def get summoner_id, options = {}
+      perform_request(api_url("matchlist/by-summoner/#{summoner_id}", options))
     end
   end
 end
