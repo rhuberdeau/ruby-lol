@@ -20,6 +20,7 @@ VCR.configure do |c|
   c.hook_into :webmock
   c.ignore_hosts 'codeclimate.com'
   c.configure_rspec_metadata!
+  c.filter_sensitive_data("<RIOT API KEY>") {ENV.fetch("RIOT_API_KEY")}
 end
 
 RSpec.configure do |c|
