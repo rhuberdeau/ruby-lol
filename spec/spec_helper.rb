@@ -8,13 +8,6 @@ SPEC_ROOT = __dir__
 
 Dir[File.expand_path(File.join(File.dirname(__FILE__),'support','**','*.rb'))].each {|f| require f}
 
-SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new [
-  Coveralls::SimpleCov::Formatter,
-  SimpleCov::Formatter::HTMLFormatter
-]
-
-SimpleCov.start
-
 VCR.configure do |c|
   c.cassette_library_dir = File.join(SPEC_ROOT, '..', 'fixtures', 'vcr_cassettes')
   c.hook_into :webmock
