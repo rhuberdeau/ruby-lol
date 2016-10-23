@@ -1,0 +1,52 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://na.api.pvp.net/observer-mode/rest/consumer/getSpectatorGameInfo/NA1/47581120?api_key=RGAPI-A57E7FF0-4281-46DF-8A33-4C58F6233FA2
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Content-Type:
+      - application/json
+      Accept:
+      - application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Accept-Ranges:
+      - bytes
+      Age:
+      - '0'
+      Cache-Control:
+      - no-cache, max-age=180
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Sun, 23 Oct 2016 15:10:25 GMT
+      Expires:
+      - Wed, 31 Dec 1969 16:00:00 PST
+      Pragma:
+      - No-cache
+      Via:
+      - 1.1 varnish
+      X-Rate-Limit-Count:
+      - 1:10,4:600
+      X-Varnish:
+      - '439979729'
+      Content-Length:
+      - '6314'
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: '{"gameId":2327296940,"mapId":11,"gameMode":"CLASSIC","gameType":"MATCHED_GAME","gameQueueConfigId":410,"participants":[{"teamId":100,"spell1Id":4,"spell2Id":3,"championId":12,"profileIconId":1233,"summonerName":"DoombringerEX","bot":false,"summonerId":47581120,"runes":[{"count":9,"runeId":5273},{"count":9,"runeId":5296},{"count":5,"runeId":5316},{"count":4,"runeId":5317},{"count":3,"runeId":5356}],"masteries":[{"rank":5,"masteryId":6211},{"rank":1,"masteryId":6223},{"rank":5,"masteryId":6231},{"rank":1,"masteryId":6241},{"rank":5,"masteryId":6311},{"rank":1,"masteryId":6322},{"rank":5,"masteryId":6332},{"rank":1,"masteryId":6342},{"rank":5,"masteryId":6352},{"rank":1,"masteryId":6363}]},{"teamId":100,"spell1Id":7,"spell2Id":4,"championId":51,"profileIconId":522,"summonerName":"Rekeri","bot":false,"summonerId":19353105,"runes":[{"count":9,"runeId":5245},{"count":9,"runeId":5289},{"count":9,"runeId":5317},{"count":3,"runeId":5337}],"masteries":[{"rank":5,"masteryId":6111},{"rank":1,"masteryId":6122},{"rank":5,"masteryId":6131},{"rank":1,"masteryId":6142},{"rank":5,"masteryId":6151},{"rank":1,"masteryId":6162},{"rank":5,"masteryId":6312},{"rank":1,"masteryId":6322},{"rank":5,"masteryId":6331},{"rank":1,"masteryId":6343}]},{"teamId":100,"spell1Id":4,"spell2Id":1,"championId":69,"profileIconId":1301,"summonerName":"Not
+        King Cobra","bot":false,"summonerId":37539418,"runes":[{"count":9,"runeId":5273},{"count":8,"runeId":5289},{"count":1,"runeId":5298},{"count":9,"runeId":5316},{"count":3,"runeId":5357}],"masteries":[{"rank":5,"masteryId":6114},{"rank":1,"masteryId":6121},{"rank":5,"masteryId":6134},{"rank":1,"masteryId":6142},{"rank":5,"masteryId":6312},{"rank":1,"masteryId":6323},{"rank":5,"masteryId":6331},{"rank":1,"masteryId":6343},{"rank":5,"masteryId":6351},{"rank":1,"masteryId":6361}]},{"teamId":100,"spell1Id":11,"spell2Id":6,"championId":120,"profileIconId":1259,"summonerName":"Eu
+        sunt Dracul","bot":false,"summonerId":74989080,"runes":[{"count":9,"runeId":5253},{"count":3,"runeId":5289},{"count":6,"runeId":5290},{"count":5,"runeId":5316},{"count":4,"runeId":5317},{"count":3,"runeId":5365}],"masteries":[{"rank":5,"masteryId":6114},{"rank":1,"masteryId":6121},{"rank":5,"masteryId":6134},{"rank":1,"masteryId":6142},{"rank":5,"masteryId":6211},{"rank":1,"masteryId":6223},{"rank":5,"masteryId":6231},{"rank":1,"masteryId":6241},{"rank":5,"masteryId":6251},{"rank":1,"masteryId":6262}]},{"teamId":100,"spell1Id":4,"spell2Id":12,"championId":122,"profileIconId":25,"summonerName":"Sapfiros","bot":false,"summonerId":39916197,"runes":[{"count":9,"runeId":5245},{"count":9,"runeId":5290},{"count":9,"runeId":5317},{"count":3,"runeId":5335}],"masteries":[{"rank":5,"masteryId":6114},{"rank":1,"masteryId":6122},{"rank":5,"masteryId":6131},{"rank":1,"masteryId":6142},{"rank":5,"masteryId":6211},{"rank":1,"masteryId":6223},{"rank":5,"masteryId":6232},{"rank":1,"masteryId":6241},{"rank":5,"masteryId":6251},{"rank":1,"masteryId":6261}]},{"teamId":200,"spell1Id":4,"spell2Id":7,"championId":119,"profileIconId":1381,"summonerName":"Emilia
+        Is Love","bot":false,"summonerId":80681130,"runes":[{"count":5,"runeId":5245},{"count":2,"runeId":5247},{"count":2,"runeId":5251},{"count":5,"runeId":5289},{"count":4,"runeId":5290},{"count":9,"runeId":5317},{"count":3,"runeId":5337}],"masteries":[{"rank":5,"masteryId":6111},{"rank":1,"masteryId":6122},{"rank":5,"masteryId":6131},{"rank":1,"masteryId":6142},{"rank":5,"masteryId":6151},{"rank":1,"masteryId":6161},{"rank":5,"masteryId":6312},{"rank":1,"masteryId":6322},{"rank":5,"masteryId":6331},{"rank":1,"masteryId":6343}]},{"teamId":200,"spell1Id":6,"spell2Id":4,"championId":4,"profileIconId":878,"summonerName":"cant
+        believe","bot":false,"summonerId":32578662,"runes":[{"count":9,"runeId":5298},{"count":9,"runeId":5316},{"count":3,"runeId":5365},{"count":9,"runeId":5402}],"masteries":[{"rank":5,"masteryId":6114},{"rank":1,"masteryId":6122},{"rank":1,"masteryId":6131},{"rank":4,"masteryId":6134},{"rank":1,"masteryId":6142},{"rank":5,"masteryId":6312},{"rank":1,"masteryId":6322},{"rank":4,"masteryId":6331},{"rank":1,"masteryId":6332},{"rank":1,"masteryId":6343},{"rank":5,"masteryId":6351},{"rank":1,"masteryId":6362}]},{"teamId":200,"spell1Id":12,"spell2Id":4,"championId":85,"profileIconId":1298,"summonerName":"GoSuPoTaTo","bot":false,"summonerId":47175459,"runes":[{"count":9,"runeId":5245},{"count":3,"runeId":5290},{"count":6,"runeId":5296},{"count":9,"runeId":5316},{"count":3,"runeId":5337}],"masteries":[{"rank":5,"masteryId":6114},{"rank":1,"masteryId":6121},{"rank":5,"masteryId":6134},{"rank":1,"masteryId":6141},{"rank":5,"masteryId":6312},{"rank":1,"masteryId":6322},{"rank":5,"masteryId":6331},{"rank":1,"masteryId":6342},{"rank":5,"masteryId":6351},{"rank":1,"masteryId":6362}]},{"teamId":200,"spell1Id":11,"spell2Id":4,"championId":64,"profileIconId":1339,"summonerName":"Kuye","bot":false,"summonerId":35491384,"runes":[{"count":9,"runeId":5245},{"count":9,"runeId":5289},{"count":9,"runeId":5317},{"count":3,"runeId":5335}],"masteries":[{"rank":5,"masteryId":6114},{"rank":1,"masteryId":6121},{"rank":5,"masteryId":6131},{"rank":1,"masteryId":6141},{"rank":5,"masteryId":6312},{"rank":1,"masteryId":6321},{"rank":5,"masteryId":6331},{"rank":1,"masteryId":6343},{"rank":5,"masteryId":6351},{"rank":1,"masteryId":6362}]},{"teamId":200,"spell1Id":4,"spell2Id":14,"championId":53,"profileIconId":1239,"summonerName":"megapasta","bot":false,"summonerId":25425198,"runes":[{"count":9,"runeId":5245},{"count":9,"runeId":5297},{"count":9,"runeId":5315},{"count":2,"runeId":5347},{"count":1,"runeId":5357}],"masteries":[{"rank":5,"masteryId":6211},{"rank":1,"masteryId":6221},{"rank":5,"masteryId":6231},{"rank":1,"masteryId":6241},{"rank":5,"masteryId":6311},{"rank":1,"masteryId":6322},{"rank":5,"masteryId":6331},{"rank":1,"masteryId":6342},{"rank":5,"masteryId":6352},{"rank":1,"masteryId":6362}]}],"observers":{"encryptionKey":"+4eai2icEfJu8kpLzxQOW6LivxcDAeWS"},"platformId":"NA1","bannedChampions":[{"championId":136,"teamId":100,"pickTurn":1},{"championId":20,"teamId":200,"pickTurn":2},{"championId":76,"teamId":100,"pickTurn":3},{"championId":13,"teamId":200,"pickTurn":4},{"championId":104,"teamId":100,"pickTurn":5},{"championId":92,"teamId":200,"pickTurn":6}],"gameStartTime":1477234649561,"gameLength":595}'
+    http_version: 
+  recorded_at: Sun, 23 Oct 2016 15:10:25 GMT
+recorded_with: VCR 2.9.3
