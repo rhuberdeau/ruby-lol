@@ -45,6 +45,23 @@ describe Client do
         expect(champion_request.cache_store).to eq(real_redis.cache_store)
       end
     end
+
+    context "rate_limiting" do
+      let(:client) { Client.new "foo", rate_limit_requests: 10 }
+
+      it "sets rate limiting if specified in the options" do
+        expect(client.rate_limited?).to be_truthy
+      end
+
+      it "instantiates a rate limiter if it is in the options" do
+        expect(client.rate_limiter).not_to be_nil
+      end
+
+      it "passes the rate limiter to the request" do
+        champion_request = client.champion
+        expect(champion_request.rate_limiter).to eq(client.rate_limiter)
+      end
+    end
   end
 
   describe "#cached?" do
@@ -65,21 +82,9 @@ describe Client do
     end
 
     it "initializes the ChampionRequest with the current API key and region" do
-      expect(ChampionRequest).to receive(:new).with(subject.api_key, subject.region, subject.cache_store)
+      expect(ChampionRequest).to receive(:new).with(subject.api_key, subject.region, subject.cache_store, subject.rate_limiter)
 
       subject.champion
-    end
-  end
-
-  describe '#game' do
-    it "returns an instance of GameRequest" do
-      expect(subject.game).to be_a(GameRequest)
-    end
-
-    it "initializes the GameRequest with the current API key and region" do
-      expect(GameRequest).to receive(:new).with(subject.api_key, subject.region, subject.cache_store)
-
-      subject.game
     end
   end
 
@@ -89,33 +94,33 @@ describe Client do
     end
 
     it "initializes the MatchRequest with the current API key and region" do
-      expect(MatchRequest).to receive(:new).with(subject.api_key, subject.region, subject.cache_store)
+      expect(MatchRequest).to receive(:new).with(subject.api_key, subject.region, subject.cache_store, subject.rate_limiter)
 
       subject.match
     end
   end
 
-  describe '#stats' do
-    it "returns an instance of StatsRequest" do
-      expect(subject.stats).to be_a(StatsRequest)
+  describe '#runes' do
+    it "returns an instance of RunesRequest" do
+      expect(subject.runes).to be_a(RunesRequest)
     end
 
-    it "initializes the StatsRequest with the current API key and region" do
-      expect(StatsRequest).to receive(:new).with(subject.api_key, subject.region, subject.cache_store)
+    it "initializes the RunesRequest with the current API key and region" do
+      expect(RunesRequest).to receive(:new).with(subject.api_key, subject.region, subject.cache_store, subject.rate_limiter)
 
-      subject.stats
+      subject.runes
     end
   end
 
-  describe '#team' do
-    it "returns an instance of TeamRequest" do
-      expect(subject.team).to be_a(TeamRequest)
+  describe '#masteries' do
+    it "returns an instance of MasteriesRequest" do
+      expect(subject.masteries).to be_a(MasteriesRequest)
     end
 
-    it "initializes the TeamRequest with the current API key and region" do
-      expect(TeamRequest).to receive(:new).with(subject.api_key, subject.region, subject.cache_store)
+    it "initializes the MasteriesRequest with the current API key and region" do
+      expect(MasteriesRequest).to receive(:new).with(subject.api_key, subject.region, subject.cache_store, subject.rate_limiter)
 
-      subject.team
+      subject.masteries
     end
   end
 
@@ -125,7 +130,7 @@ describe Client do
     end
 
     it "initializes the LeagueRequest with the current API key and region" do
-      expect(LeagueRequest).to receive(:new).with(subject.api_key, subject.region, subject.cache_store)
+      expect(LeagueRequest).to receive(:new).with(subject.api_key, subject.region, subject.cache_store, subject.rate_limiter)
 
       subject.league
     end
@@ -137,7 +142,7 @@ describe Client do
     end
 
     it "initializes the SummonerRequest with the current API key and region" do
-      expect(SummonerRequest).to receive(:new).with(subject.api_key, subject.region, subject.cache_store)
+      expect(SummonerRequest).to receive(:new).with(subject.api_key, subject.region, subject.cache_store, subject.rate_limiter)
 
       subject.summoner
     end
@@ -149,7 +154,7 @@ describe Client do
     end
 
     it "initializes the StaticRequest with the current API key and region" do
-      expect(StaticRequest).to receive(:new).with(subject.api_key, subject.region, subject.cache_store)
+      expect(StaticRequest).to receive(:new).with(subject.api_key, subject.region, subject.cache_store, subject.rate_limiter)
 
       subject.static
     end
@@ -158,38 +163,6 @@ describe Client do
   describe '#lol_status' do
     it 'return an instance of LolStatusRequest' do
       expect(subject.lol_status).to be_a(LolStatusRequest)
-    end
-  end
-
-  describe '#current_game' do
-    it 'returns an instance of CurrentGameRequest' do
-      expect(subject.current_game).to be_a CurrentGameRequest
-    end
-
-    it 'initializes CurrentGameRequest with the current API key an region' do
-      expect(CurrentGameRequest).to receive(:new).with subject.api_key, subject.region, subject.cache_store
-      subject.current_game
-    end
-
-    it 'memoizes the result' do
-      expect(CurrentGameRequest).to receive(:new).and_return(double).exactly(:once)
-      2.times { subject.current_game }
-    end
-  end
-
-  describe '#featured_games' do
-    it 'returns an instance of FeaturedGamesRequest' do
-      expect(subject.featured_games).to be_a FeaturedGamesRequest
-    end
-
-    it 'initializes FeaturedGamesRequest with the current API key an region' do
-      expect(FeaturedGamesRequest).to receive(:new).with subject.api_key, subject.region, subject.cache_store
-      subject.featured_games
-    end
-
-    it 'memoizes the result' do
-      expect(FeaturedGamesRequest).to receive(:new).and_return(double).exactly(:once)
-      2.times { subject.featured_games }
     end
   end
 

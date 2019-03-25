@@ -4,94 +4,51 @@ require "lol"
 include Lol
 
 describe LeagueRequest do
-  it "inherits from Request" do
-    expect(LeagueRequest.ancestors[1]).to eq(Request)
+  subject { LeagueRequest.new 'api_key', 'euw' }
+
+  it 'inherits from V3 Request' do
+    expect(LeagueRequest).to be < Request
   end
 
-  let(:request) { LeagueRequest.new("api_key", "euw") }
-
-  describe "#get" do
-    subject { request.get(123) }
-
-    let(:fixture) { load_fixture('league', request.class.api_version) }
-
-    before(:each) { stub_request(request, 'league', 'league/by-summoner/123') }
-
-    it "returns a hash of arrays of Leagues" do
-      expect(subject.map {|_,v| v.map(&:class).uniq}.flatten).to eq([League])
+  describe '#find_challenger' do
+    it 'returns a DynamicModel' do
+      stub_request subject, 'league-challenger', 'challengerleagues/by-queue/RANKED_SOLO_5x5'
+      expect(subject.find_challenger).to be_a DynamicModel
     end
 
-    it 'has hash keys with string summoner ids' do
-      expect(subject.keys).to eq(fixture.keys)
+    it 'finds the challenger league for the given queue' do
+      stub_request subject, 'league-challenger', 'challengerleagues/by-queue/foo'
+      subject.find_challenger queue: 'foo'
     end
   end
 
-  describe "#get_entries" do
-    subject { request.get_entries(123) }
-
-    let(:fixture) { load_fixture('league-entry', request.class.api_version) }
-
-    before(:each) { stub_request(request, 'league-entry', 'league/by-summoner/123/entry') }
-
-    it 'returns a hash of arrays of Leagues' do
-      expect(subject.map {|_,v| v.map(&:class).uniq}.flatten).to eq([League])
+  describe '#find_master' do
+    it 'returns a LeagueList' do
+      stub_request subject, 'league-master', 'masterleagues/by-queue/RANKED_SOLO_5x5'
+      expect(subject.find_master).to be_a DynamicModel
     end
 
-    it 'has hash keys with summoner ids' do
-      expect(subject.keys).to eq(fixture.keys)
+    it 'finds the master league for the given queue' do
+      stub_request subject, 'league-master', 'masterleagues/by-queue/foo'
+      subject.find_master queue: 'foo'
     end
   end
 
-  describe '#by_team' do
-    subject { request.by_team('TEAM-7d7013d0-b38b-11e3-9e38-782bcb497d6f') }
-
-    let(:fixture) { load_fixture('league-by-team', request.class.api_version) }
-
-    before(:each) { stub_request(request, 'league-by-team', 'league/by-team/TEAM-7d7013d0-b38b-11e3-9e38-782bcb497d6f') }
-
-    it 'returns a hash of arrays of Leagues' do
-      expect(subject.map {|_,v| v.map(&:class).uniq}.flatten).to eq([League])
-    end
-
-    it 'has hash keys with string team id' do
-      expect(subject.keys).to eq(fixture.keys)
+  describe '#summoner_leagues' do
+    it 'returns an array of LeagueList objects' do
+      stub_request subject, 'league-summoner', 'leagues/by-summoner/1'
+      result = subject.summoner_leagues summoner_id: 1
+      expect(result).to be_a Array
+      expect(result.map(&:class).uniq).to eq [DynamicModel]
     end
   end
 
-  describe '#entries_by_team' do
-    subject { request.entries_by_team('TEAM-7d7013d0-b38b-11e3-9e38-782bcb497d6f') }
-
-    let(:fixture) { load_fixture('league-entry-by-team', request.class.api_version) }
-
-    before(:each) { stub_request(request, 'league-entry-by-team', 'league/by-team/TEAM-7d7013d0-b38b-11e3-9e38-782bcb497d6f/entry') }
-
-    it 'returns a hash of arrays of Leagues' do
-      expect(subject.map {|_,v| v.map(&:class).uniq}.flatten).to eq([League])
-    end
-
-    it 'has hash keys with string team id' do
-      expect(subject.keys).to eq(fixture.keys)
+  describe '#summoner_positions' do
+    it 'returns an array of DynamicModel objects' do
+      stub_request subject, 'league-positions', 'positions/by-summoner/1'
+      result = subject.summoner_positions summoner_id: 1
+      expect(result).to be_a Array
+      expect(result.map(&:class).uniq).to eq [DynamicModel]
     end
   end
-
-  describe '#challenger' do
-    subject { request.challenger('RANKED_SOLO_5x5') }
-
-    before(:each) { stub_request(request, 'league-challenger', 'league/challenger', { :type => 'RANKED_SOLO_5x5' }) }
-
-    it 'returns League' do
-      expect(subject.class).to eq(League)
-    end
-  end
-
-  describe '#master' do 
-    subject { request.master('RANKED_SOLO_5x5')}
-
-    before(:each) { stub_request(request, 'league-master', 'league/master', { :type => 'RANKED_SOLO_5x5'})}
-
-    it 'returns League' do 
-      expect(subject.class).to eq(League)
-    end
-  end
-
 end

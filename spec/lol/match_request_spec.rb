@@ -4,24 +4,53 @@ require "lol"
 include Lol
 
 describe MatchRequest do
+  subject { MatchRequest.new "api_key", "euw" }
+
   it "inherits from Request" do
-    expect(MatchRequest.ancestors[1]).to eq(Request)
+    expect(MatchRequest).to be < Request
   end
 
-  let(:request) { MatchRequest.new("api_key", "euw") }
-
-  describe "#get" do
-    subject { request.get(1) }
-
-    before { stub_request(request, 'match', 'match/1') }
-
-    it 'returns an hash' do
-      expect(subject).to be_a(Hash)
+  describe "#find" do
+    it "returns a DynamicModel" do
+      stub_request subject, 'match', "matches/1"
+      expect(subject.find match_id: 1).to be_a DynamicModel
     end
+  end
 
-    it 'fetches matches from the API' do
-      fixture = load_fixture('match', MatchRequest.api_version)
-      expect(subject.keys).to match_array fixture.keys
+  describe "#find_timeline" do
+    it "returns a DynamicModel" do
+      stub_request subject, 'timeline', "timelines/by-match/1"
+      expect(subject.find_timeline 1).to be_a DynamicModel
+    end
+  end
+
+  describe "#ids_by_tournament_code" do
+    it "returns a list of ids" do
+      stub_request subject, 'ids-by-tc', "matches/by-tournament-code/1/ids"
+      result = subject.ids_by_tournament_code '1'
+      expect(result).to be_a Array
+      expect(result.map(&:class).uniq).to eq [Fixnum]
+    end
+  end
+
+  describe "#find_by_tournament" do
+    it "returns a DynamicModel" do
+      stub_request subject, 'match-with-tc', "matches/1/by-tournament-code/2"
+      expect(subject.find_by_tournament 1, 2).to be_a DynamicModel
+    end
+  end
+
+  describe "#all" do
+    it "returns a DynamicModel" do
+      stub_request subject, 'matches', "matchlists/by-account/1"
+      expect(subject.all account_id: 1).to be_a DynamicModel
+    end
+  end
+
+  describe "#recent" do
+    it "returns a DynamicModel" do
+      stub_request subject, 'matches-recent', "matchlists/by-account/1/recent"
+      expect(subject.recent account_id: 1).to be_a DynamicModel
     end
   end
 end

@@ -1,62 +1,41 @@
 module Lol
+  # Bindings for the League API.
+  #
+  # See: https://developer.riotgames.com/api-methods/#league-v3
   class LeagueRequest < Request
-    # Returns the supported API Version
-    # @return [String] the supported api version
-    def self.api_version
-      "v2.5"
+    # @!visibility private
+    def api_base_path
+      "/lol/league/#{api_version}"
     end
 
-    # Retrieves leagues data for summoner, including leagues for all of summoner's teams
-    # @param [Array<String>]
-    # @return Hash{String => Array<League>}
-    def get(*summoner_ids)
-      perform_league_request("league/by-summoner/#{summoner_ids.join(",")}")
+    # Get the challenger league for a given queue
+    # @param [String] queue Queue identifier. See the list of game constants (developer.riotgames.com/game-constants.html) for the available queue identifiers
+    # @return [DynamicModel] Challenger league
+    def find_challenger queue: 'RANKED_SOLO_5x5'
+      DynamicModel.new perform_request api_url "challengerleagues/by-queue/#{queue}"
     end
 
-    # Retrieves leagues entry data for summoner, including league entries for all of summoner's teams
-    # @param [Array<String>]
-    # @return Hash{String => Array<League>}
-    # TODO: Change name to entries?
-    def get_entries(*summoner_ids)
-      perform_league_request("league/by-summoner/#{summoner_ids.join(',')}/entry")
+    # Get the master league for a given queue
+    # @param [String] queue Queue identifier. See the list of game constants (developer.riotgames.com/game-constants.html) for the available queue identifiers
+    # @return [DynamicModel] lMaster league
+    def find_master queue: 'RANKED_SOLO_5x5'
+      DynamicModel.new perform_request api_url "masterleagues/by-queue/#{queue}"
     end
 
-    # Retrieves leagues data for team
-    # @param [Array<String>]
-    # @return Hash{String => Array<League>}
-    def by_team(*team_ids)
-      perform_league_request("league/by-team/#{team_ids.join(',')}")
+    # Get leagues in all queues for a given summoner ID
+    # @param [Integer] summoner_id Summoner ID associated with the player
+    # @return [Array<DynamicModel>] List of leagues summoner is participating in
+    def summoner_leagues summoner_id:
+      result = perform_request api_url "leagues/by-summoner/#{summoner_id}"
+      result.map { |c| DynamicModel.new c }
     end
 
-    # Retrieves leagues entry data for team
-    # @param [Array<String>]
-    # @return Hash{String => Array<League>}
-    # TODO: Change name to?
-    def entries_by_team(*team_ids)
-      perform_league_request("league/by-team/#{team_ids.join(',')}/entry")
+    # Get league positions in all queues for a given summoner ID
+    # @param [Integer] summoner_id Summoner ID associated with the player
+    # @return [Array<DynamicModel>] list of league positions
+    def summoner_positions summoner_id:
+      result = perform_request api_url "positions/by-summoner/#{summoner_id}"
+      result.map { |c| DynamicModel.new c }
     end
-
-    # Retrieves challenger tier leagues
-    # @param [String] game queue type
-    # @return [League]
-    def challenger(game_queue_type="RANKED_SOLO_5x5")
-      league_json = perform_request(api_url('league/challenger', { :type => game_queue_type }))
-      League.new(league_json)
-    end
-
-    def master(game_queue_type="RANKED_SOLO_5x5")
-      league_json = perform_request(api_url('league/master', { :type => game_queue_type }))
-      League.new(league_json)
-    end
-
-  private
-
-    def perform_league_request(partial_url)
-      url = api_url(partial_url)
-      perform_request(url).each_with_object({}) do |(summoner_id, leagues), entries_hash|
-        entries_hash[summoner_id] = leagues.map(&League.method(:new))
-      end
-    end
-
   end
 end

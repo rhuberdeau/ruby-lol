@@ -4,43 +4,30 @@ require "lol"
 include Lol
 
 describe ChampionRequest do
+  subject { described_class.new("api_key", "euw") }
+
   it "inherits from Request" do
-    expect(ChampionRequest.ancestors[1]).to eq(Request)
+    expect(described_class.ancestors[1]).to eq(Request)
   end
 
-  let(:request) { ChampionRequest.new("api_key", "euw") }
+  describe "#find" do
+    it "returns a champion" do
+      stub_request subject, 'champion-266', 'champions/266'
+      expect(subject.find 266).to be_a DynamicModel
+    end
+  end
 
-  describe "#get" do
+  describe "#all" do
+    before { stub_request subject, 'champion-all', 'champions', 'freeToPlay' => false }
+    let(:result) { subject.all }
 
-    context "specifying an id" do
-      subject { request.get(:id => 266) }
-
-      before(:each) { stub_request(request, 'champion-266', 'champion/266', 'freeToPlay' => false) }
-
-      it "returns a champion" do
-        expect(subject).to be_a(Champion)
-      end
+    it "returns an array of champions" do
+      expect(result).to be_a Array
+      expect(result.map(&:class).uniq).to eq [DynamicModel]
     end
 
-    context "getting all" do
-      subject { request.get }
-
-      before(:each) { stub_request(request, 'champion', 'champion', 'freeToPlay' => false) }
-
-      it "returns an array" do
-        expect(subject).to be_a(Array)
-      end
-
-      it "returns an array of champions" do
-        expect(subject.map {|e| e.class}.uniq).to eq([Champion])
-      end
-
-      it "fetches champions from the API" do
-        expect(subject.size).to eq(load_fixture("champion", ChampionRequest.api_version)["champions"].size)
-      end
-
+    it "fetches champions from the API" do
+      expect(result.size).to eq load_fixture('champion-all', described_class.api_version)['champions'].size
     end
-
-
   end
 end

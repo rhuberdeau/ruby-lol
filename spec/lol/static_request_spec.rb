@@ -4,87 +4,122 @@ require "lol"
 include Lol
 
 describe StaticRequest do
-  describe "api_version" do
-    it "is v1.2" do
-      expect(StaticRequest.api_version).to eq("v1.2")
-    end
-  end
+  let(:subject) { StaticRequest.new("api_key", "euw") }
 
-  let(:request) { StaticRequest.new("api_key", "euw") }
-
-  describe "#api_url" do
-    it "contains a static-data path component" do
-      expect(request.api_url("foo")).to eq("https://global.api.pvp.net/api/lol/static-data/euw/v1.2/foo?api_key=api_key")
-    end
-  end
-
-  StaticRequest::STANDARD_ENDPOINTS.each do |endpoint|
-    describe "##{endpoint}" do
+  {
+    "champion"       => "champions",
+    "item"           => "items",
+    "mastery"        => "masteries",
+    "rune"           => "runes",
+    "summoner_spell" => "summoner_spells"
+  }.each do |old_edpoint, new_endpoint|
+    describe "##{new_endpoint}" do
       it "returns a Proxy" do
-        expect(request.send(endpoint).class).to eq(StaticRequest::Proxy)
+        expect(subject.send(new_endpoint).class).to eq(StaticRequest::Proxy)
       end
 
       describe "#get" do
-        it "proxies get to StaticRequest with the correct endpoint" do
-          expect(request).to receive(:get).with(endpoint, anything, anything)
+        let(:fixture_name) { "static-#{new_endpoint.dasherize}" }
 
-          request.send(endpoint).get
+        it "proxies get to StaticRequest with the correct endpoint" do
+          expect(subject).to receive(:get).with(new_endpoint, anything, anything)
+          subject.send(new_endpoint).get
         end
 
-        context "without_id" do
-
-          let(:fixture_name) { endpoint == 'champion' ? 'static-champion' : endpoint.dasherize }
+        context "without an id" do
           let(:fixture) { load_fixture(fixture_name, StaticRequest.api_version) }
 
-          subject { request.public_send(endpoint).get }
+          let(:result) { subject.public_send(new_endpoint).get }
 
-          before(:each) { stub_request(request, fixture_name, "#{endpoint.dasherize}") }
+          before { stub_request(subject, fixture_name, "#{new_endpoint.dasherize}") }
 
-          it "returns an Array" do
-            expect(subject).to be_an(Array)
+          it "returns an Array of OpenStruct" do
+            expect(result).to be_a Array
+            expect(result.map(&:class).uniq).to eq([OpenStruct])
           end
 
-          it "returns an Array of OpenStructs" do
-            expect(subject.map(&:class).uniq).to eq([OpenStruct])
-          end
-
-          it "fetches #{endpoint} from the API" do
-            expect(subject.size).to eq(fixture["data"].size)
+          it "fetches #{new_endpoint} from the API" do
+            expect(result.size).to eq(fixture["data"].size)
           end
         end
 
-        context "with_id" do
-          let(:id) { 1 }
-
-          before(:each) { stub_request(request, "#{endpoint.dasherize}-by-id", "#{endpoint.dasherize}/#{id}") }
-
-          subject { request.public_send(endpoint).get(id) }
-
+        context "with an id" do
           it "returns an OpenStruct" do
-            expect(subject).to be_an(OpenStruct)
+            stub_request(subject, "#{fixture_name}-by-id", "#{new_endpoint.dasherize}/1")
+            expect(subject.public_send(new_endpoint).get 1).to be_a OpenStruct
           end
         end
       end
     end
   end
 
-  describe "#realm" do
-    subject { request.realm.get }
+  describe "#reforged_runes" do
+    it "returns a Proxy" do
+      expect(subject.reforged_runes.class).to eq(StaticRequest::Proxy)
+    end
 
-    before(:each) { stub_request(request, 'realm', 'realm') }
+    describe "#get" do
+      let(:fixture_name) { "static-reforged-runes" }
+
+      it "proxies get to StaticRequest with the correct endpoint" do
+        expect(subject).to receive(:get).with('reforged_runes', anything, anything)
+        subject.reforged_runes.get
+      end
+
+      context "without an id" do
+        let(:fixture) { load_fixture(fixture_name, StaticRequest.api_version) }
+
+        let(:result) { subject.reforged_runes.get }
+
+        before { stub_request(subject, fixture_name, "reforged-runes") }
+
+        it "returns an Array of OpenStruct" do
+          expect(result).to be_a Array
+          expect(result.map(&:class).uniq).to eq([OpenStruct])
+        end
+
+        it "fetches reforged_runes from the API" do
+          expect(result.size).to eq(fixture.size)
+        end
+      end
+
+      context "with an id" do
+        it "returns an OpenStruct" do
+          stub_request(subject, "#{fixture_name}-by-id", "reforged-runes/1")
+          expect(subject.reforged_runes.get 1).to be_a OpenStruct
+        end
+      end
+    end
+  end
+
+  describe "#maps" do
+    let(:result) { subject.maps.get }
+
+    before(:each) { stub_request(subject, 'static-maps', 'maps') }
+
+    it "returns an Array of OpenStructs" do
+      expect(result).to be_a Array
+      expect(result.map(&:class).uniq).to eq [OpenStruct]
+    end
+  end
+
+  describe "#realms" do
+    let(:result) { subject.realms.get }
+
+    before(:each) { stub_request(subject, 'static-realms', 'realms') }
 
     it "returns an OpenStruct" do
-      expect(subject).to be_an(OpenStruct)
+      expect(result).to be_a OpenStruct
     end
   end
 
   describe "#versions" do
-    subject { request.versions.get }
+    let(:result) { subject.versions.get }
 
-    before(:each) { stub_request(request, 'versions', 'versions') }
+    before(:each) { stub_request(subject, 'static-versions', 'versions') }
 
     it "returns an Array" do
-      expect(subject).to be_an(Array)
+      expect(result).to be_an(Array)
     end
   end
 

@@ -1,3 +1,3 @@
 module Lol
-  VERSION = "0.12.1"
+  VERSION = "1.2.0"
 end

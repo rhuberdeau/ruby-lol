@@ -1,34 +1,17 @@
 module Lol
+  # Bindings for the Status API.
+  #
+  # See: https://developer.riotgames.com/api-methods/#lol-status-v3
   class LolStatusRequest < Request
-
-    def self.api_version
-      "v1.0"
+    # @!visibility private
+    def api_base_path
+      "/lol/status/#{self.class.api_version}"
     end
 
-    def initialize region = nil, cache_store = {}
-      super nil, region, cache_store
-    end
-
-    # Returns a list of each shard status
-    # This special call works against all regions
-    # @return [Array] an array of DynamicModel representing the response
-    def shards
-      perform_request(api_url('shards')).map do |shard_data|
-        DynamicModel.new shard_data
-      end
-    end
-
-    # Returns a detailed status of the current shard
+    # Get League of Legends status for the given shard
     # @return [DynamicModel]
-    def current_shard
-      shard_data = perform_request(api_url('shards', region))
-      DynamicModel.new shard_data
-    end
-
-    def api_url path, params = {}
-      "http://status.leagueoflegends.com/#{path}".tap do |url|
-        url << "/#{params}" unless params.empty?
-      end
+    def shard_data
+      DynamicModel.new perform_request api_url "shard-data"
     end
   end
 end

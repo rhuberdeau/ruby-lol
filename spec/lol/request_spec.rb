@@ -19,8 +19,8 @@ describe Request do
 
     it "sets the cache store" do
       redis_store = Redis.new
-      c = ChampionRequest.new("api_key", "euw", redis_store)
-      expect(c.cache_store).to eq(redis_store)
+      c = ChampionRequest.new("api_key", "euw", {redis: redis_store})
+      expect(c.store).to eq(redis_store)
     end
 
     it "returns an error if the cache store is not supported" do
@@ -28,7 +28,8 @@ describe Request do
     end
   end
 
-  subject { Request.new "api_key", "euw"}
+  subject { Request.new "api_key", "euw", {}, rate_limiter }
+  let(:rate_limiter) { nil }
 
   describe "#perform_request" do
 
@@ -152,6 +153,16 @@ describe Request do
         request.perform_request "/foo?api_key=asd"
       end
     end
+
+    context 'with rate limits' do
+      let(:rate_limiter) { Lol::Client.new('api_key').set_up_rate_limiter(1, 20) }
+      before { stub_request subject, 'champion-all', 'champions' }
+
+      it 'uses rate limiter' do
+        expect(subject.rate_limiter).to receive(:times).and_call_original
+        subject.perform_request subject.api_url('champions')
+      end
+    end
   end
 
   describe "clean_url" do
@@ -162,11 +173,11 @@ describe Request do
 
   describe "api_url" do
     it "defaults on Request#region" do
-      expect(subject.api_url("bar")).to match(/\/euw\//)
+      expect(subject.api_url("bar")).to match(/\/euw1\./)
     end
 
     it "defaults on Reques.api_version" do
-      expect(subject.api_url("bar")).to match(/\/v1.1\//)
+      expect(subject.api_url("bar")).to match(/\/v3\//)
     end
 
     it "a path" do
@@ -174,11 +185,11 @@ describe Request do
     end
 
     it "returns a full fledged api url" do
-      expect(subject.api_url("bar")).to eq("https://euw.api.pvp.net/api/lol/euw/v1.1/bar?api_key=api_key")
+      expect(subject.api_url("bar")).to eq("https://euw1.api.riotgames.com/lol/platform/v3/bar?api_key=api_key")
     end
 
     it "optionally accept query string parameters" do
-      expect(subject.api_url("foo", a: 'b')).to eq("https://euw.api.pvp.net/api/lol/euw/v1.1/foo?a=b&api_key=api_key")
+      expect(subject.api_url("foo", a: 'b')).to eq("https://euw1.api.riotgames.com/lol/platform/v3/foo?a=b&api_key=api_key")
     end
 
     it "delegates the base url to #api_base_url" do
@@ -194,7 +205,7 @@ describe Request do
 
   describe "#api_base_url" do
     it "returns the base domain" do
-      expect(subject.api_base_url).to eq "https://euw.api.pvp.net"
+      expect(subject.api_base_url).to eq "https://euw1.api.riotgames.com"
     end
   end
 

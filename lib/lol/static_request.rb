@@ -1,55 +1,74 @@
 module Lol
   class StaticRequest < Request
-    STANDARD_ENDPOINTS = %w(champion item mastery rune summoner_spell)
-
-    def self.api_version
-      "v1.2"
+    # @!visibility private
+    def api_base_path
+      "/lol/static-data/#{self.class.api_version}"
     end
 
-    # Returns a full url for an API call
-    # Overrides api_url from Request
-    # @param path [String] API path to call
-    # @return [String] full fledged url
-    def api_url path, params = {}
-      super(path,params).gsub(/api\/lol/, "api/lol/static-data").gsub(/\/\/#{region}/, "//global")
+    {
+      "champion"       => "champions",
+      "item"           => "items",
+      "mastery"        => "masteries",
+      "rune"           => "runes",
+      "summoner_spell" => "summoner_spells"
+    }.each do |old_endpoint, new_endpoint|
+      define_method new_endpoint do
+        Proxy.new self, new_endpoint
+      end
     end
 
-    STANDARD_ENDPOINTS.each do |endpoint|
-      define_method(endpoint) { Proxy.new self, endpoint }
+    def language_strings params={}
+      perform_request(api_url "language-strings", params).to_hash["data"]
     end
 
-    def realm
-      Proxy.new self, 'realm'
+    def languages
+      perform_request api_url "languages"
+    end
+
+    def maps
+      Proxy.new self, "maps"
+    end
+
+    def profile_icons params={}
+      all "profile_icons", params
+    end
+
+    def realms
+      Proxy.new self, "realms"
+    end
+
+    def reforged_runes
+      Proxy.new self, "reforged_runes"
     end
 
     def versions
-      Proxy.new self, 'versions'
+      Proxy.new self, "versions"
     end
 
     def get(endpoint, id=nil, params={})
-      return perform_request(api_url("versions")).map {|x| x} if endpoint == "versions"
+      return perform_request(api_url("versions")) if endpoint == "versions"
       id ? find(endpoint, id, params) : all(endpoint, params)
     end
 
     private
 
     def find(endpoint, id, params={})
-      model_class(endpoint).new \
+      OpenStruct.new \
         perform_request(api_url("#{endpoint.dasherize}/#{id}", params)).to_hash
     end
 
     def all(endpoint, params={})
-      if %w(realm).include? endpoint
-        model_class(endpoint).new perform_request(api_url(endpoint.dasherize, params)).to_hash
+      if %w(realms).include? endpoint
+        OpenStruct.new perform_request(api_url(endpoint.dasherize, params)).to_hash
+      elsif %w(reforged_runes).include? endpoint
+        perform_request(api_url(endpoint.dasherize, params)).map do |hash|
+          OpenStruct.new(hash)
+        end
       else
         perform_request(api_url(endpoint.dasherize, params))["data"].map do |id, values|
-          model_class(endpoint).new(values.merge(id: values["id"] || id))
+          OpenStruct.new(values.merge(id: values["id"] || id))
         end
       end
-    end
-
-    def model_class(endpoint)
-      OpenStruct
     end
 
     class Proxy
