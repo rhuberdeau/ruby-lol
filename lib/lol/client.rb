@@ -69,7 +69,7 @@ module Lol
 
     # @return [CurrentGameRequest]
     def current_game
-      @current_game ||= CurrentGameRequest.new(api_key, region, cache_store, rate_limiter)
+      @current_game ||= SpectatorRequest.new(api_key, region, cache_store, rate_limiter)
     end
 
     # @return [FeaturedGamesRequest]

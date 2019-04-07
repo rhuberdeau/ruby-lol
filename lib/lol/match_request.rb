@@ -55,10 +55,10 @@ module Lol
     end
 
     # Get matchlist for last 20 matches played on given encrypted account ID and platform ID.
-    # @param [Integer] encrypted_account_id Encrypted Account ID
+    # @param [String] account_id Account ID
     # @return [DynamicModel] MatchList represantion
-    def recent encrypted_account_id:
-      DynamicModel.new perform_request api_url "matchlists/by-account/#{encrypted_account_id}/recent"
+    def recent account_id:
+      DynamicModel.new perform_request api_url "matchlists/by-account/#{account_id}"
     end
   end
 end
